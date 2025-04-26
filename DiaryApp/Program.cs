@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using DiaryApp.Data;
+using Diary.Repository.Data;
+using Diary.Repository.Interfaces;
+using Diary.Repository.Repositories;
+using Diary.Business.Services;
+using Diary.Business.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +13,10 @@ builder.Services.AddControllersWithViews();
 // Add database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Dependency Injection
+builder.Services.AddScoped<IDiaryEntryRepository, DiaryEntryRepository>();
+builder.Services.AddScoped<IDiaryEntryService, DiaryEntryService>();
 
 var app = builder.Build();
 

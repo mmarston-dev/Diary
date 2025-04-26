@@ -1,26 +1,27 @@
 using System.Diagnostics;
-using DiaryApp.Data;
-using DiaryApp.Models;
+using Diary.Business.Models;
+using Diary.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 
-namespace DiaryApp.Controllers
+namespace DiaryApp.Presentation.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IDiaryEntryService _diaryEntryService;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ApplicationDbContext db, ILogger<HomeController> logger)
+        public HomeController(IDiaryEntryService diaryEntryService, ILogger<HomeController> logger)
         {
-            _db = db;
+            _diaryEntryService = diaryEntryService;
             _logger = logger;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            List<DiaryEntry> entries = _db.DiaryEntries.ToList();
+            List<DiaryEntryModel> entries = _diaryEntryService.GetAllDiaryEntries().ToList();
             return View(entries);
         }
 
@@ -31,7 +32,7 @@ namespace DiaryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(DiaryEntry entry)
+        public IActionResult Create(DiaryEntryModel entry)
         {
             // Client side validation
             if (entry.Title.IsNullOrEmpty())
@@ -46,8 +47,7 @@ namespace DiaryApp.Controllers
             if (ModelState.IsValid)
             {
                 // Update database
-                _db.DiaryEntries.Add(entry);
-                _db.SaveChanges();
+                _diaryEntryService.CreateDiaryEntry(entry);
                 return RedirectToAction("Index");
             }
             else
@@ -65,7 +65,7 @@ namespace DiaryApp.Controllers
                 return NotFound();
             }
 
-            var entry = _db.DiaryEntries.Find(id);
+            var entry = _diaryEntryService.GetDiaryEntryById(id);
 
             if (entry == null)
             {
@@ -76,7 +76,7 @@ namespace DiaryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(DiaryEntry entry)
+        public IActionResult Edit(DiaryEntryModel entry)
         {
             // Client side validation
             if (entry.Title.IsNullOrEmpty())
@@ -91,8 +91,7 @@ namespace DiaryApp.Controllers
             if (ModelState.IsValid)
             {
                 // Update database
-                _db.DiaryEntries.Update(entry);
-                _db.SaveChanges();
+                _diaryEntryService.UpdateDiaryEntry(entry);
                 return RedirectToAction("Index");
             }
             else
@@ -110,7 +109,7 @@ namespace DiaryApp.Controllers
                 return NotFound();
             }
 
-            var entry = _db.DiaryEntries.Find(id);
+            var entry = _diaryEntryService.GetDiaryEntryById(id);
 
             if (entry == null)
             {
@@ -121,11 +120,10 @@ namespace DiaryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(DiaryEntry entry)
+        public IActionResult Delete(DiaryEntryModel entry)
         {
             // Update database
-            _db.DiaryEntries.Remove(entry);
-            _db.SaveChanges();
+            _diaryEntryService.DeleteDiaryEntry(entry.Id);
             return RedirectToAction("Index");
         }
 
