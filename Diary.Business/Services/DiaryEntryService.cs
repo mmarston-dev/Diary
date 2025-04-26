@@ -2,11 +2,6 @@
 using Diary.Business.Models;
 using Diary.Repository.Entities;
 using Diary.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Diary.Business.Services
 {

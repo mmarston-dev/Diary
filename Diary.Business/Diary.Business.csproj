@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DiaryApp.Data\Diary.Repository.csproj" />
+    <ProjectReference Include="..\Diary.Repository\Diary.Repository.csproj" />
   </ItemGroup>
 
 </Project>
